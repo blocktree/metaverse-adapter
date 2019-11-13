@@ -73,3 +73,7 @@ func (wm *WalletManager) GetAssetsLogger() *log.OWLogger {
 func (wm *WalletManager) GetSmartContractDecoder() openwallet.SmartContractDecoder {
 	return wm.ContractDecoder
 }
+
+func (wm *WalletManager) BalanceModelType() openwallet.BalanceModelType {
+	return openwallet.BalanceModelTypeAddress
+}

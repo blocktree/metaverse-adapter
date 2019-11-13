@@ -142,3 +142,25 @@ func TestWalletManager_GetAddressETP(t *testing.T) {
 	}
 	log.Infof("balance = %+v", balance)
 }
+
+func TestWalletManager_GetAddressAsset(t *testing.T) {
+	balance, err := tw.GetAddressAsset("MUsTC2PCF52yNvAeGNXJUKy9CfLVHV9yYj", "DNA")
+
+	if err != nil {
+		t.Errorf("GetAddressAsset failed unexpected error: %v\n", err)
+		return
+	}
+	log.Infof("balance = %+v", balance)
+}
+
+func TestWalletManager_CreateRawTx(t *testing.T) {
+	sender := "MUsTC2PCF52yNvAeGNXJUKy9CfLVHV9yYj"
+	receiver := "MTDcfh43xT93odL1Y2uULhRLeWED2fDvBX"
+	amount := "100000"
+	rawHex, err := tw.CreateRawTx(sender, receiver, "", amount, "", false)
+	if err != nil {
+		t.Errorf("CreateRawTx failed unexpected error: %v\n", err)
+		return
+	}
+	log.Infof("rawHex = %+v", rawHex)
+}

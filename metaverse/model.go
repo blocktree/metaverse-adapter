@@ -169,7 +169,6 @@ func (wm *WalletManager) NewTransaction(json *gjson.Result) *Transaction {
 	obj.Version = gjson.Get(json.Raw, "version").Uint()
 	obj.LockTime = gjson.Get(json.Raw, "lock_time").Int()
 	obj.BlockHeight = gjson.Get(json.Raw, "height").Uint()
-	obj.Decimals = wm.Decimal()
 	obj.Vins = make([]*Vin, 0)
 	if vins := gjson.Get(json.Raw, "inputs"); vins.IsArray() {
 		for i, vin := range vins.Array() {
@@ -293,6 +292,42 @@ func NewETPBalance(json *gjson.Result) *ETPBalance {
 	obj.Frozen = gjson.Get(json.Raw, "frozen").String()
 	obj.Received = gjson.Get(json.Raw, "received").String()
 	obj.Unspent = gjson.Get(json.Raw, "unspent").String()
+
+	return obj
+}
+
+type TokenBalance struct {
+	/*
+
+		"address" : "MTDcfh43xT93odL1Y2uULhRLeWED2fDvBX",
+		"decimal_number" : 4,
+		"description" : "Metaverse Dual Chain Official Token",
+		"issuer" : "DNA",
+		"locked_quantity" : 0,
+		"quantity" : 51864340000,
+		"secondaryissue_threshold" : 0,
+		"status" : "unspent",
+		"symbol" : "DNA"
+
+	*/
+
+	Address        string
+	Decimals       int32
+	Symbol         string
+	Quantity       string
+	Status         string
+	LockedQuantity string
+}
+
+func NewTokenBalance(json *gjson.Result) *TokenBalance {
+	obj := &TokenBalance{}
+	//解析json
+	obj.Address = gjson.Get(json.Raw, "address").String()
+	obj.Decimals = int32(gjson.Get(json.Raw, "decimal_number").Int())
+	obj.Symbol = gjson.Get(json.Raw, "symbol").String()
+	obj.Quantity = gjson.Get(json.Raw, "quantity").String()
+	obj.Status = gjson.Get(json.Raw, "status").String()
+	obj.LockedQuantity = gjson.Get(json.Raw, "locked_quantity").String()
 
 	return obj
 }

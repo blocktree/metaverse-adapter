@@ -105,9 +105,8 @@ func TestWalletManager_GetTransactionByWxID(t *testing.T) {
 
 func TestWalletManager_GetAssetsAccountBalance(t *testing.T) {
 	tm := testInitWalletManager()
-	walletID := "WCJCXnevTTBCPxfc2zS7kxCPLsH9S2Aqcf"
-	accountID := "7XB8PtHt41sh7rEVdRChiPC8rhDqY2LpuqXfUt9xoqw4"
-	//accountID := "E9YzesiKWYYcddLyM87xjEMjRLPW5VJ6LzeMpSLsGRrq"
+	walletID := "WHVMNrUKoKqAQ8zUDKTo5FsRczs3jcyBhQ"
+	accountID := "74Yy2VDrRCWhzA7NZ3foYNCdykoPjdYmE9A2RabmxMjN"
 	balance, err := tm.GetAssetsAccountBalance(testApp, walletID, accountID)
 	if err != nil {
 		log.Error("GetAssetsAccountBalance failed, unexpected error:", err)
@@ -118,15 +117,15 @@ func TestWalletManager_GetAssetsAccountBalance(t *testing.T) {
 
 func TestWalletManager_GetAssetsAccountTokenBalance(t *testing.T) {
 	tm := testInitWalletManager()
-	walletID := "WCJCXnevTTBCPxfc2zS7kxCPLsH9S2Aqcf"
-	accountID := "7XB8PtHt41sh7rEVdRChiPC8rhDqY2LpuqXfUt9xoqw4"
+	walletID := "WHVMNrUKoKqAQ8zUDKTo5FsRczs3jcyBhQ"
+	accountID := "74Yy2VDrRCWhzA7NZ3foYNCdykoPjdYmE9A2RabmxMjN"
 
 	contract := openwallet.SmartContract{
-		Address:  "583244-1358-57077",
+		Address:  "DNA",
 		Symbol:   "ETP",
-		Name:     "CPC",
-		Token:    "CPC",
-		Decimals: 6,
+		Name:     "DNA",
+		Token:    "DNA",
+		Decimals: 4,
 	}
 
 	balance, err := tm.GetAssetsAccountTokenBalance(testApp, walletID, accountID, contract)

@@ -17,6 +17,7 @@ package openwtester
 
 import (
 	"github.com/astaxie/beego/config"
+	"github.com/blocktree/openwallet/common/file"
 	"github.com/blocktree/openwallet/log"
 	"github.com/blocktree/openwallet/openw"
 	"github.com/blocktree/openwallet/openwallet"
@@ -59,9 +60,8 @@ func TestSubscribeAddress(t *testing.T) {
 		endRunning = make(chan bool, 1)
 		symbol     = "ETP"
 		addrs      = map[string]string{
-			"15dsWRHfrzkssRXvNtQQ28Y6sQVvfNSJhG": "sender",
-			"1MasZiznUuxPNYCNGmSoesp1TqoNJCi4tC": "receiver",
-			"1PGx3n1w1QR9UJ1t3U5dVDBfKEUYzcStuB": "fee",
+			"33WuUsfKDHGho1KNSTknixEzYriUr2do8K": "sender",
+			"MUsTC2PCF52yNvAeGNXJUKy9CfLVHV9yYj": "receiver",
 		}
 	)
 
@@ -107,7 +107,19 @@ func TestSubscribeAddress(t *testing.T) {
 
 	//log.Debug("already got scanner:", assetsMgr)
 	scanner := assetsMgr.GetBlockScanner()
-	scanner.SetRescanBlockHeight(658233)
+
+	if scanner.SupportBlockchainDAI() {
+		file.MkdirAll(dbFilePath)
+		dai, err := openwallet.NewBlockchainLocal(filepath.Join(dbFilePath, dbFileName), true)
+		if err != nil {
+			log.Error("NewBlockchainLocal err: %v", err)
+			return
+		}
+
+		scanner.SetBlockchainDAI(dai)
+	}
+
+	scanner.SetRescanBlockHeight(2958644)
 
 	if scanner == nil {
 		log.Error(symbol, "is not support block scan")
