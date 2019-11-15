@@ -7,8 +7,7 @@ require (
 	github.com/blocktree/go-owaddress v1.0.7
 	github.com/blocktree/go-owcdrivers v1.1.23
 	github.com/blocktree/go-owcrypt v1.0.4
-	github.com/blocktree/openwallet v1.5.4
-	github.com/btcsuite/btcd v0.20.0-beta
+	github.com/blocktree/openwallet v1.5.5
 	github.com/imroc/req v0.2.4
 	github.com/shiena/ansicolor v0.0.0-20151119151921-a422bbe96644 // indirect
 	github.com/shopspring/decimal v0.0.0-20191009025716-f1972eb1d1f5
