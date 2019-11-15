@@ -95,14 +95,14 @@ func (bs *ETPBlockScanner) SetRescanBlockHeight(height uint64) error {
 func (bs *ETPBlockScanner) ScanBlockTask() {
 
 	//获取本地区块高度
-	localHeight, localHash, err := bs.GetLocalBlockHead()
+	header, err := bs.GetScannedBlockHeader()
 	if err != nil {
 		bs.wm.Log.Std.Info("block scanner can not get new block height; unexpected error: %v", err)
 		return
 	}
 
-	currentHeight := localHeight
-	currentHash := localHash
+	currentHeight := header.Height
+	currentHash := header.Hash
 
 	for {
 
@@ -267,6 +267,39 @@ func (bs *ETPBlockScanner) scanBlock(height uint64) (*Block, error) {
 	//bs.wm.SaveLocalBlock(block)
 
 	return block, nil
+}
+
+
+//GetScannedBlockHeader 获取当前扫描的区块头
+func (bs *ETPBlockScanner) GetScannedBlockHeader() (*openwallet.BlockHeader, error) {
+
+	var (
+		blockHeight uint64 = 0
+		hash        string
+	)
+
+	blockHeight, hash, _ = bs.GetLocalBlockHead()
+
+	//如果本地没有记录，查询接口的高度
+	if blockHeight == 0 {
+		header, err := bs.wm.GetBlockHeader()
+		if err != nil {
+
+			return nil, err
+		}
+
+		//就上一个区块链为当前区块
+		blockHeight = header.Height - 1
+
+		startHeader, err := bs.wm.GetBlockHeader(blockHeight)
+		if err != nil {
+			return nil, err
+		}
+
+		hash = startHeader.Hash
+	}
+
+	return &openwallet.BlockHeader{Height: blockHeight, Hash: hash}, nil
 }
 
 //rescanFailedRecord 重扫失败记录
