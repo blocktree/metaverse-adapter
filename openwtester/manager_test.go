@@ -114,7 +114,8 @@ func TestWalletManager_CreateAddress(t *testing.T) {
 	tm := testInitWalletManager()
 
 	walletID := "WHVMNrUKoKqAQ8zUDKTo5FsRczs3jcyBhQ"
-	accountID := "74Yy2VDrRCWhzA7NZ3foYNCdykoPjdYmE9A2RabmxMjN"
+	//accountID := "74Yy2VDrRCWhzA7NZ3foYNCdykoPjdYmE9A2RabmxMjN"
+	accountID := "CDpf4PEZGWhbzevnRVTiDqACmnsrwJEKbzdSnpwwL1vz"
 	address, err := tm.CreateAddress(testApp, walletID, accountID, 5)
 	if err != nil {
 		log.Error(err)
@@ -131,7 +132,8 @@ func TestWalletManager_GetAddressList(t *testing.T) {
 	tm := testInitWalletManager()
 
 	walletID := "WHVMNrUKoKqAQ8zUDKTo5FsRczs3jcyBhQ"
-	accountID := "74Yy2VDrRCWhzA7NZ3foYNCdykoPjdYmE9A2RabmxMjN"
+	//accountID := "74Yy2VDrRCWhzA7NZ3foYNCdykoPjdYmE9A2RabmxMjN"
+	accountID := "CDpf4PEZGWhbzevnRVTiDqACmnsrwJEKbzdSnpwwL1vz"
 	list, err := tm.GetAddressList(testApp, walletID, accountID, 0, -1, false)
 	if err != nil {
 		log.Error("unexpected error:", err)

@@ -157,10 +157,44 @@ func TestWalletManager_CreateRawTx(t *testing.T) {
 	sender := "MUsTC2PCF52yNvAeGNXJUKy9CfLVHV9yYj"
 	receiver := "MTDcfh43xT93odL1Y2uULhRLeWED2fDvBX"
 	amount := "100000"
-	rawHex, err := tw.CreateRawTx(sender, receiver, "", amount, "", false)
+	fees := tw.Config.MinFees.Shift(tw.Decimal()).String()
+	rawHex, err := tw.CreateRawTx([]string{sender}, map[string]string{receiver: amount}, "",  fees, "", false)
 	if err != nil {
 		t.Errorf("CreateRawTx failed unexpected error: %v\n", err)
 		return
 	}
 	log.Infof("rawHex = %+v", rawHex)
+}
+
+func TestWalletManager_DecodeRawTx(t *testing.T) {
+	rawHex := "0400000001d58650140f9957acec4cabc9a05a0e332fa7123d394ce89791f6058466c722910000000000ffffffff02a0860100000000001976a914d3e7f1c96a7be7903867a17f18e16cae8fad8d4d88ac0100000000000000501c993b000000001976a914e607f73ea755a41b4b649114a9bed5dba1ca8da088ac010000000000000000000000"
+	tx, err := tw.DecodeRawTx(rawHex)
+	if err != nil {
+		t.Errorf("DecodeRawTx failed unexpected error: %v\n", err)
+		return
+	}
+
+	t.Logf("TxID = %v \n", tx.TxID)
+	t.Logf("IsCoinBase = %v \n", tx.IsCoinBase)
+	t.Logf("LockTime = %v \n", tx.LockTime)
+	t.Logf("RawHex = %v \n", tx.RawHex)
+
+	t.Logf("========= vins ========= \n")
+
+	for i, vin := range tx.Vins {
+		t.Logf("TxID[%d] = %v \n", i, vin.TxID)
+		t.Logf("Vout[%d] = %v \n", i, vin.Vout)
+		t.Logf("Addr[%d] = %v \n", i, vin.Addr)
+		t.Logf("Value[%d] = %v \n", i, vin.Value)
+	}
+
+	t.Logf("========= vouts ========= \n")
+
+	for i, out := range tx.Vouts {
+		t.Logf("Addr[%d] = %v \n", i, out.Addr)
+		t.Logf("Value[%d] = %v \n", i, out.Value)
+		t.Logf("Value[%d] = %v \n", i, out.Type)
+		t.Logf("Value[%d] = %v \n", i, out.IsToken)
+		t.Logf("Value[%d] = %v \n", i, out.AssetAttachment)
+	}
 }

@@ -39,7 +39,7 @@ func NewWalletManager() *WalletManager {
 	wm.Decoder = NewAddressDecoder(&wm)
 	wm.Log = log.NewOWLogger(wm.Symbol())
 	wm.Blockscanner = NewETPBlockScanner(&wm)
-	//wm.TxDecoder = NewTransactionDecoder(&wm)
+	wm.TxDecoder = NewTransactionDecoder(&wm)
 	wm.ContractDecoder = NewContractDecoder(&wm)
 	return &wm
 }
@@ -159,15 +159,25 @@ func (wm *WalletManager) GetAddressAsset(address, symbol string) (*TokenBalance,
 }
 
 // CreateRawTx
-func (wm WalletManager) CreateRawTx(sender, receiver, change, amount, symbol string, isToken bool) (string, *openwallet.Error) {
-
-	fees := wm.Config.MinFees.Shift(wm.Decimal())
+func (wm *WalletManager) CreateRawTx(sender []string, receivers map[string]string, change, fees, symbol string, isToken bool) (string, *openwallet.Error) {
 
 	request := map[string]interface{}{
 		"senders":   sender,
-		"receivers": fmt.Sprintf("%s:%s", receiver, amount),
-		"fee":       fees.String(),
+		"fee":       fees,
 	}
+
+	comb := make([]string, 0)
+	//["MMRbpJdtxXeNmdwRZa4JjNgraL2XKUeg4e:1460"]
+	for addr, amount := range receivers {
+		rec := fmt.Sprintf("%s:%s", addr, amount)
+		comb = append(comb, rec)
+	}
+
+	if len(comb) == 0 {
+		return "", openwallet.Errorf(openwallet.ErrCreateRawTransactionFailed, "receivers is empty")
+	}
+
+	request["receivers"] = comb
 
 	if len(change) > 0 {
 		request["mychange"] = change
@@ -188,4 +198,74 @@ func (wm WalletManager) CreateRawTx(sender, receiver, change, amount, symbol str
 	rawHex := result.String()
 
 	return rawHex, nil
+}
+
+
+// DecodeRawTx
+func (wm *WalletManager) DecodeRawTx(rawHex string) (*Transaction, *openwallet.Error) {
+
+	request := []interface{}{
+		rawHex,
+	}
+
+	result, err := wm.WalletClient.Call("decoderawtx", request)
+	if err != nil {
+		return nil, err
+	}
+
+	tx := wm.NewTransaction(result)
+	tx.RawHex = rawHex
+
+	err = wm.FillInputFields(tx)
+	if err != nil {
+		return nil, err
+	}
+
+	return tx, nil
+}
+
+// SendRawTx
+func (wm *WalletManager) SendRawTx(rawHex string) (string, *openwallet.Error) {
+
+	request := []interface{}{
+		rawHex,
+	}
+
+	result, err := wm.WalletClient.Call("sendrawtx", request)
+	if err != nil {
+		return "", err
+	}
+
+	txid := result.String()
+
+	return txid, nil
+}
+
+// FillInputFields
+func (wm *WalletManager) FillInputFields(tx *Transaction) *openwallet.Error {
+	for _, input := range tx.Vins {
+
+		if input.isCoinbase {
+			break
+		}
+
+		intxid := input.TxID
+		vout := input.Vout
+		preTx, txErr := wm.GetTransaction(intxid)
+		if txErr != nil {
+			return txErr
+		} else {
+			preVouts := preTx.Vouts
+			if len(preVouts) > int(vout) {
+				preOut := preVouts[vout]
+				input.Addr = preOut.Addr
+				input.Value = preOut.Value
+				input.AssetAttachment = preOut.AssetAttachment
+				input.IsToken = preOut.IsToken
+				input.LockScript = preOut.LockScript
+			}
+		}
+	}
+
+	return nil
 }

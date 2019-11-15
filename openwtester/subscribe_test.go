@@ -60,8 +60,9 @@ func TestSubscribeAddress(t *testing.T) {
 		endRunning = make(chan bool, 1)
 		symbol     = "ETP"
 		addrs      = map[string]string{
-			"33WuUsfKDHGho1KNSTknixEzYriUr2do8K": "sender",
-			"MUsTC2PCF52yNvAeGNXJUKy9CfLVHV9yYj": "receiver",
+			"MUsTC2PCF52yNvAeGNXJUKy9CfLVHV9yYj": "sender",
+			"MHr2w1nQ2aiGuh7McpAvi5TMvqmzVLJeNC": "receiver",
+			"MSz3Ca3SJGDezZRXDNJG5pHGgbxQktikce": "fee",
 		}
 	)
 
@@ -110,7 +111,7 @@ func TestSubscribeAddress(t *testing.T) {
 
 	if scanner.SupportBlockchainDAI() {
 		file.MkdirAll(dbFilePath)
-		dai, err := openwallet.NewBlockchainLocal(filepath.Join(dbFilePath, dbFileName), true)
+		dai, err := openwallet.NewBlockchainLocal(filepath.Join(dbFilePath, dbFileName), false)
 		if err != nil {
 			log.Error("NewBlockchainLocal err: %v", err)
 			return
@@ -119,7 +120,7 @@ func TestSubscribeAddress(t *testing.T) {
 		scanner.SetBlockchainDAI(dai)
 	}
 
-	scanner.SetRescanBlockHeight(2958644)
+	scanner.SetRescanBlockHeight(2970600)
 
 	if scanner == nil {
 		log.Error(symbol, "is not support block scan")

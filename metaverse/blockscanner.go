@@ -482,41 +482,49 @@ func (bs *ETPBlockScanner) extractTransaction(trx *Transaction, result *ExtractR
 		success = false
 	} else {
 
-		vin := trx.Vins
+		//vin := trx.Vins
 		blocktime := trx.Blocktime
 
 		//检查交易单输入信息是否完整，不完整查上一笔交易单的输出填充数据
-		for _, input := range vin {
 
-			if input.isCoinbase {
-				//coinbase skip
-				success = true
-				break
-			}
-
-			intxid := input.TxID
-			vout := input.Vout
-			preTx, txErr := bs.wm.GetTransaction(intxid)
-			if txErr != nil {
-				success = false
-				break
-			} else {
-				preVouts := preTx.Vouts
-				if len(preVouts) > int(vout) {
-					preOut := preVouts[vout]
-					input.Addr = preOut.Addr
-					input.Value = preOut.Value
-					input.AssetAttachment = preOut.AssetAttachment
-					input.IsToken = preOut.IsToken
-
-					success = true
-
-					//bs.wm.Log.Debug("GetTxOut:", output[vout])
-
-				}
-			}
-
+		txErr := bs.wm.FillInputFields(trx)
+		if txErr != nil {
+			success = false
+		} else {
+			success = true
 		}
+
+		//for _, input := range vin {
+		//
+		//	if input.isCoinbase {
+		//		//coinbase skip
+		//		success = true
+		//		break
+		//	}
+		//
+		//	intxid := input.TxID
+		//	vout := input.Vout
+		//	preTx, txErr := bs.wm.GetTransaction(intxid)
+		//	if txErr != nil {
+		//		success = false
+		//		break
+		//	} else {
+		//		preVouts := preTx.Vouts
+		//		if len(preVouts) > int(vout) {
+		//			preOut := preVouts[vout]
+		//			input.Addr = preOut.Addr
+		//			input.Value = preOut.Value
+		//			input.AssetAttachment = preOut.AssetAttachment
+		//			input.IsToken = preOut.IsToken
+		//
+		//			success = true
+		//
+		//			//bs.wm.Log.Debug("GetTxOut:", output[vout])
+		//
+		//		}
+		//	}
+		//
+		//}
 
 		if success {
 
@@ -948,7 +956,6 @@ func (bs *ETPBlockScanner) GetScannedBlockHeight() uint64 {
 	return localHeight
 }
 
-
 func (bs *ETPBlockScanner) ExtractTransactionData(txid string, scanTargetFunc openwallet.BlockScanTargetFunc) (map[string][]*openwallet.TxExtractData, error) {
 
 	trx, err := bs.wm.GetTransaction(txid)
@@ -1019,7 +1026,6 @@ func (bs *ETPBlockScanner) GetBalanceByAddress(address ...string) ([]*openwallet
 	return addrBalanceArr, nil
 
 }
-
 
 //SupportBlockchainDAI 支持外部设置区块链数据访问接口
 //@optional

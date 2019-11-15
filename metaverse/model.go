@@ -104,6 +104,7 @@ type Transaction struct {
 	Blocktime   int64
 	IsCoinBase  bool
 	Decimals    int32
+	RawHex      string
 
 	Vins  []*Vin
 	Vouts []*Vout
@@ -118,6 +119,7 @@ type Vin struct {
 	Value           string
 	AssetAttachment *AssetAttachment
 	IsToken         bool
+	LockScript      string
 }
 
 type Vout struct {
@@ -128,6 +130,7 @@ type Vout struct {
 	AssetAttachment   *AssetAttachment
 	IsToken           bool
 	LockedHeightRange int64
+	LockScript        string
 }
 
 func (wm *WalletManager) NewTransaction(json *gjson.Result) *Transaction {
@@ -250,6 +253,7 @@ func NewTxOut(json *gjson.Result) *Vout {
 	obj.Addr = gjson.Get(json.Raw, "address").String()
 	obj.Type = gjson.Get(json.Raw, "attachment.type").String()
 	obj.LockedHeightRange = gjson.Get(json.Raw, "locked_height_range").Int()
+	obj.LockScript = gjson.Get(json.Raw, "script").String()
 
 	if obj.Type == "etp" {
 		obj.IsToken = false

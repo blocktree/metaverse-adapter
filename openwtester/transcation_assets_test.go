@@ -70,7 +70,6 @@ func testCreateSummaryTransactionStep(
 		retainedBalance, feeRate, start, limit, contract, feeSupportAccount)
 
 	if err != nil {
-		log.Error("CreateSummaryTransaction failed, unexpected error:", err)
 		return nil, err
 	}
 
@@ -121,27 +120,26 @@ func testSubmitTransactionStep(tm *openw.WalletManager, rawTx *openwallet.RawTra
 func TestTransfer(t *testing.T) {
 
 	addrs := []string{
-		//"122CsmrZzGBecM5R456yCb7kMRo1aFUBUT",
-		//"15dsWRHfrzkssRXvNtQQ28Y6sQVvfNSJhG",
-		//"16ZpDQ45bo4kavBzsaD9GHjjnRuwJPQHuf",
-		//"1D65CTVmVv4pmpAy65P8ZQKwWuqQBxHB4V",
-		//"1KLSHGtEG5xk18T2Vzegkzu3qa5svPPLKb",
-		//"1L1ayirgcx9o68XzSX4WcF9ZsPGLmUvRyR",
+		"M8zhymCjZD9ZzSR9skirEhJnNDEdcJBb6c",
+		"MC3byQPhQS9dQYkY4ME5R94j5GksWvDYTR",
+		"MDgW56oXUFMRfSuRhPcyoWcGwSyj81hUnM",
+		"MHr2w1nQ2aiGuh7McpAvi5TMvqmzVLJeNC",
+		"MMRbpJdtxXeNmdwRZa4JjNgraL2XKUeg4e",
+		"MNVJdDfesiRdPMWz1QCnyvAXTbTcfdaBun",
 
-		"1BuHkUX3aLQtVgUgpKn1ddVafw8x8q8wTd",
+		//"MSz3Ca3SJGDezZRXDNJG5pHGgbxQktikce", //手续费地址
 	}
 
 
 	tm := testInitWalletManager()
-	walletID := "WCJCXnevTTBCPxfc2zS7kxCPLsH9S2Aqcf"
-	accountID := "7XB8PtHt41sh7rEVdRChiPC8rhDqY2LpuqXfUt9xoqw4"
-	//to := "1DdtdoAQcL21Kwa6xKGVmWFVuxi3j7Jjyo"
+	walletID := "WHVMNrUKoKqAQ8zUDKTo5FsRczs3jcyBhQ"
+	accountID := "74Yy2VDrRCWhzA7NZ3foYNCdykoPjdYmE9A2RabmxMjN"
 
 	testGetAssetsAccountBalance(tm, walletID, accountID)
 
 	for _, to := range addrs {
 
-		rawTx, err := testCreateTransactionStep(tm, walletID, accountID, to, "0.01", "", nil)
+		rawTx, err := testCreateTransactionStep(tm, walletID, accountID, to, "0.1234", "", nil)
 		if err != nil {
 			return
 		}
@@ -171,29 +169,27 @@ func TestTransfer(t *testing.T) {
 func TestTransfer_Token(t *testing.T) {
 
 	addrs := []string{
-		//"122CsmrZzGBecM5R456yCb7kMRo1aFUBUT",
-		//"15dsWRHfrzkssRXvNtQQ28Y6sQVvfNSJhG",
-		//"16ZpDQ45bo4kavBzsaD9GHjjnRuwJPQHuf",
-		//"1D65CTVmVv4pmpAy65P8ZQKwWuqQBxHB4V",
-		//"1KLSHGtEG5xk18T2Vzegkzu3qa5svPPLKb",
-		//"1L1ayirgcx9o68XzSX4WcF9ZsPGLmUvRyR",
+		"M8zhymCjZD9ZzSR9skirEhJnNDEdcJBb6c",
+		"MC3byQPhQS9dQYkY4ME5R94j5GksWvDYTR",
+		"MDgW56oXUFMRfSuRhPcyoWcGwSyj81hUnM",
+		"MHr2w1nQ2aiGuh7McpAvi5TMvqmzVLJeNC",
+		"MMRbpJdtxXeNmdwRZa4JjNgraL2XKUeg4e",
+		"MNVJdDfesiRdPMWz1QCnyvAXTbTcfdaBun",
 
-		"1BuHkUX3aLQtVgUgpKn1ddVafw8x8q8wTd",
+		"MSz3Ca3SJGDezZRXDNJG5pHGgbxQktikce", //手续费地址
 	}
 
 
 	tm := testInitWalletManager()
-	walletID := "WCJCXnevTTBCPxfc2zS7kxCPLsH9S2Aqcf"
-	accountID := "7XB8PtHt41sh7rEVdRChiPC8rhDqY2LpuqXfUt9xoqw4"
-	//accountID := "E9YzesiKWYYcddLyM87xjEMjRLPW5VJ6LzeMpSLsGRrq"
-	//to := "1MasZiznUuxPNYCNGmSoesp1TqoNJCi4tC"
+	walletID := "WHVMNrUKoKqAQ8zUDKTo5FsRczs3jcyBhQ"
+	accountID := "74Yy2VDrRCWhzA7NZ3foYNCdykoPjdYmE9A2RabmxMjN"
 
 	contract := openwallet.SmartContract{
-		Address:  "583244-1358-57077",
+		Address:  "DNA",
 		Symbol:   "ETP",
-		Name:     "CPC",
-		Token:    "CPC",
-		Decimals: 6,
+		Name:     "DNA",
+		Token:    "DNA",
+		Decimals: 4,
 	}
 
 	testGetAssetsAccountBalance(tm, walletID, accountID)
@@ -227,8 +223,8 @@ func TestTransfer_Token(t *testing.T) {
 func TestSummary(t *testing.T) {
 	tm := testInitWalletManager()
 	walletID := "WCJCXnevTTBCPxfc2zS7kxCPLsH9S2Aqcf"
-	accountID := "E9YzesiKWYYcddLyM87xjEMjRLPW5VJ6LzeMpSLsGRrq"
-	summaryAddress := "1MasZiznUuxPNYCNGmSoesp1TqoNJCi4tC"
+	accountID := "CDpf4PEZGWhbzevnRVTiDqACmnsrwJEKbzdSnpwwL1vz"
+	summaryAddress := "MUsTC2PCF52yNvAeGNXJUKy9CfLVHV9yYj"
 
 	//accountID := "2XWy8sjUxyn6zXqz3oeN9GZscGQ1pJ4dtTmmaFhdwiUa"
 
@@ -274,26 +270,20 @@ func TestSummary_Token(t *testing.T) {
 
 	tm := testInitWalletManager()
 	walletID := "WCJCXnevTTBCPxfc2zS7kxCPLsH9S2Aqcf"
-	accountID := "E9YzesiKWYYcddLyM87xjEMjRLPW5VJ6LzeMpSLsGRrq"
-	summaryAddress := "1MasZiznUuxPNYCNGmSoesp1TqoNJCi4tC"
-
-	//walletID := "WAmTnvPKMWpJBqKk6cncFG3mTXz3iPmtzV"
-	//accountID := "86uUBCjk4SqEtMGDt92SQfn7YLhCZEcNQGjD5GhNNtSa"
-	//summaryAddress := "12kSR8J11Q1d8JiYwZn7DZsPoDoptME35y"
+	accountID := "CDpf4PEZGWhbzevnRVTiDqACmnsrwJEKbzdSnpwwL1vz"
+	summaryAddress := "MUsTC2PCF52yNvAeGNXJUKy9CfLVHV9yYj"
 
 	contract := openwallet.SmartContract{
-		Address:  "583244-1358-57077",
+		Address:  "DNA",
 		Symbol:   "ETP",
-		Name:     "CPC",
-		Token:    "CPC",
-		Decimals: 6,
+		Name:     "DNA",
+		Token:    "DNA",
+		Decimals: 4,
 	}
 
-	//address: 1PGx3n1w1QR9UJ1t3U5dVDBfKEUYzcStuB
+	//address: MSz3Ca3SJGDezZRXDNJG5pHGgbxQktikce
 	feesSupport := openwallet.FeesSupportAccount{
-		AccountID: "26vsBY44zmJXVAHT5w1byPJArvbhUGCvqbBArh9VwGXv",
-		//AccountID: "21Vn4NEmXT6DRy2EfdPTAJCS2kYTACTuconBer8AQ1cz",
-		//FixSupportAmount: "0.01",
+		AccountID: "J2RnFngmFXSTcW4eGaR19LaZGCzTrRuJshcyJQsfw7TF",
 		FeesSupportScale: "1",
 	}
 
@@ -303,7 +293,7 @@ func TestSummary_Token(t *testing.T) {
 
 	rawTxArray, err := testCreateSummaryTransactionStep(tm, walletID, accountID,
 		summaryAddress, "", "", "",
-		0, 20, &contract, &feesSupport)
+		0, 200, &contract, &feesSupport)
 	if err != nil {
 		log.Errorf("CreateSummaryTransaction failed, unexpected error: %v", err)
 		return
