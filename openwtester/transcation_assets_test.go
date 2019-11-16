@@ -121,13 +121,15 @@ func TestTransfer(t *testing.T) {
 
 	addrs := []string{
 		"M8zhymCjZD9ZzSR9skirEhJnNDEdcJBb6c",
-		"MC3byQPhQS9dQYkY4ME5R94j5GksWvDYTR",
-		"MDgW56oXUFMRfSuRhPcyoWcGwSyj81hUnM",
-		"MHr2w1nQ2aiGuh7McpAvi5TMvqmzVLJeNC",
-		"MMRbpJdtxXeNmdwRZa4JjNgraL2XKUeg4e",
-		"MNVJdDfesiRdPMWz1QCnyvAXTbTcfdaBun",
+		//"MC3byQPhQS9dQYkY4ME5R94j5GksWvDYTR",
+		//"MDgW56oXUFMRfSuRhPcyoWcGwSyj81hUnM",
+		//"MHr2w1nQ2aiGuh7McpAvi5TMvqmzVLJeNC",
+		//"MMRbpJdtxXeNmdwRZa4JjNgraL2XKUeg4e",
+		//"MNVJdDfesiRdPMWz1QCnyvAXTbTcfdaBun",
 
 		//"MSz3Ca3SJGDezZRXDNJG5pHGgbxQktikce", //手续费地址
+
+		//"MPZd2vDvaFGwPW1L8qjN2CguFs7ZSRkY6u",
 	}
 
 
@@ -139,7 +141,7 @@ func TestTransfer(t *testing.T) {
 
 	for _, to := range addrs {
 
-		rawTx, err := testCreateTransactionStep(tm, walletID, accountID, to, "0.1234", "", nil)
+		rawTx, err := testCreateTransactionStep(tm, walletID, accountID, to, "1", "", nil)
 		if err != nil {
 			return
 		}
@@ -176,7 +178,18 @@ func TestTransfer_Token(t *testing.T) {
 		"MMRbpJdtxXeNmdwRZa4JjNgraL2XKUeg4e",
 		"MNVJdDfesiRdPMWz1QCnyvAXTbTcfdaBun",
 
-		"MSz3Ca3SJGDezZRXDNJG5pHGgbxQktikce", //手续费地址
+		//"MSz3Ca3SJGDezZRXDNJG5pHGgbxQktikce", //手续费地址
+
+		//"MC4DKZjDUrcP7TkSCCCsdMyDbExaEC4mEZ",
+		//"M8fUEbid4PMM377EbvHbU2LGTLCXqa5qAY",
+		//"MHgBzPAczeZ26c8FWDcF5qA5CLzJoW4iz4",
+		//"MRRm8xqkikTbkKTL36f1D4VcgUHEBpLWLs",
+		//"MRhvNDsWKLzR6N7kD7MmxnJDRgRiPYUXKa",
+		//"MLXtP3pmEAAAfbPSFy64YrQ3CFo6m41cRL",
+		//"MHSV8RrA7JYcbzKkdzt4rUfB7qj97XZvbB",
+		//"MKADoYLgBKSFTeuAVP1SPDsUfKhNV8ffe6",
+		//"MMRjfzsNHSmXMmrmvgZuPuKNWgc8hNhmoL",
+		//"MEumHH5pfEVEUgK9G56uhBMFBuJVxLSKiB",
 	}
 
 

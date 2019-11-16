@@ -376,7 +376,7 @@ func (decoder *TransactionDecoder) CreateETPSummaryRawTransaction(wrapper openwa
 
 	for _, addrBalance := range addrBalanceArray {
 		addrBalance_dec, _ := decimal.NewFromString(addrBalance.Balance)
-		if addrBalance_dec.LessThan(minTransfer) {
+		if addrBalance_dec.LessThan(minTransfer) || addrBalance_dec.LessThanOrEqual(decimal.Zero) {
 			continue
 		}
 
@@ -414,7 +414,7 @@ func (decoder *TransactionDecoder) CreateETPSummaryRawTransaction(wrapper openwa
 			"",
 			false)
 		if txErr != nil {
-			return nil, txErr
+			return rawTxArray, nil
 		}
 
 		etpTx, txErr := decoder.wm.DecodeRawTx(rawHex)
