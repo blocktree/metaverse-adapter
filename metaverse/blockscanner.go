@@ -17,7 +17,7 @@ package metaverse
 
 import (
 	"fmt"
-	"github.com/blocktree/openwallet/openwallet"
+	"github.com/blocktree/openwallet/v2/openwallet"
 	"github.com/shopspring/decimal"
 	"time"
 )
@@ -269,7 +269,6 @@ func (bs *ETPBlockScanner) scanBlock(height uint64) (*Block, error) {
 	return block, nil
 }
 
-
 //GetScannedBlockHeader 获取当前扫描的区块头
 func (bs *ETPBlockScanner) GetScannedBlockHeader() (*openwallet.BlockHeader, error) {
 
@@ -422,7 +421,7 @@ func (bs *ETPBlockScanner) BatchExtractTransaction(blockHeight uint64, blockHash
 			go func(mBlockHeight uint64, mTx *Transaction, end chan struct{}, mProducer chan<- ExtractResult) {
 
 				//导出提出的交易
-				mProducer <- bs.ExtractTransaction(mBlockHeight, eBlockHash, mTx, bs.ScanTargetFunc)
+				mProducer <- bs.ExtractTransaction(mBlockHeight, eBlockHash, mTx, bs.ScanTargetFuncV2)
 				//释放
 				<-end
 
@@ -487,7 +486,7 @@ func (bs *ETPBlockScanner) extractRuntime(producer chan ExtractResult, worker ch
 }
 
 //ExtractTransaction 提取交易单
-func (bs *ETPBlockScanner) ExtractTransaction(blockHeight uint64, blockHash string, trx *Transaction, scanTargetFunc openwallet.BlockScanTargetFunc) ExtractResult {
+func (bs *ETPBlockScanner) ExtractTransaction(blockHeight uint64, blockHash string, trx *Transaction, scanTargetFunc openwallet.BlockScanTargetFuncV2) ExtractResult {
 
 	var (
 		result = ExtractResult{
@@ -504,7 +503,7 @@ func (bs *ETPBlockScanner) ExtractTransaction(blockHeight uint64, blockHash stri
 }
 
 //ExtractTransactionData 提取交易单
-func (bs *ETPBlockScanner) extractTransaction(trx *Transaction, result *ExtractResult, scanTargetFunc openwallet.BlockScanTargetFunc) {
+func (bs *ETPBlockScanner) extractTransaction(trx *Transaction, result *ExtractResult, scanTargetFunc openwallet.BlockScanTargetFuncV2) {
 
 	var (
 		success = true
@@ -680,7 +679,7 @@ func (bs *ETPBlockScanner) extractTransaction(trx *Transaction, result *ExtractR
 }
 
 //ExtractTxInput 提取交易单输入部分
-func (bs *ETPBlockScanner) extractTxInput(trx *Transaction, result *ExtractResult, scanTargetFunc openwallet.BlockScanTargetFunc) (map[string]ExtractInput, map[string][]string, decimal.Decimal) {
+func (bs *ETPBlockScanner) extractTxInput(trx *Transaction, result *ExtractResult, scanTargetFunc openwallet.BlockScanTargetFuncV2) (map[string]ExtractInput, map[string][]string, decimal.Decimal) {
 
 	//vin := trx.Get("vin")
 
@@ -701,11 +700,11 @@ func (bs *ETPBlockScanner) extractTxInput(trx *Transaction, result *ExtractResul
 		amount, _ := decimal.NewFromString(output.Value)
 		amount = amount.Shift(-bs.wm.Decimal())
 		addr := output.Addr
-		sourceKey, ok := scanTargetFunc(openwallet.ScanTarget{
-			Address:          addr,
-			Symbol:           bs.wm.Symbol(),
-			BalanceModelType: openwallet.BalanceModelTypeAddress})
-		if ok {
+		targetResult := scanTargetFunc(openwallet.ScanTargetParam{
+			ScanTarget:     addr,
+			Symbol:         bs.wm.Symbol(),
+			ScanTargetType: openwallet.ScanTargetTypeAccountAddress})
+		if targetResult.Exist {
 
 			//填充主币
 			if output.IsToken {
@@ -741,14 +740,14 @@ func (bs *ETPBlockScanner) extractTxInput(trx *Transaction, result *ExtractResul
 					sourceKeyExtractInput = make(ExtractInput)
 				}
 
-				extractInput := sourceKeyExtractInput[sourceKey]
+				extractInput := sourceKeyExtractInput[targetResult.SourceKey]
 				if extractInput == nil {
 					extractInput = make([]*openwallet.TxInput, 0)
 				}
 
 				extractInput = append(extractInput, &input)
 
-				sourceKeyExtractInput[sourceKey] = extractInput
+				sourceKeyExtractInput[targetResult.SourceKey] = extractInput
 				tokenExtractInput[output.AssetAttachment.Symbol] = sourceKeyExtractInput
 
 			} else {
@@ -777,14 +776,14 @@ func (bs *ETPBlockScanner) extractTxInput(trx *Transaction, result *ExtractResul
 					sourceKeyExtractInput = make(ExtractInput)
 				}
 
-				extractInput := sourceKeyExtractInput[sourceKey]
+				extractInput := sourceKeyExtractInput[targetResult.SourceKey]
 				if extractInput == nil {
 					extractInput = make([]*openwallet.TxInput, 0)
 				}
 
 				extractInput = append(extractInput, &input)
 
-				sourceKeyExtractInput[sourceKey] = extractInput
+				sourceKeyExtractInput[targetResult.SourceKey] = extractInput
 				tokenExtractInput[bs.wm.Symbol()] = sourceKeyExtractInput
 
 			}
@@ -813,7 +812,7 @@ func (bs *ETPBlockScanner) extractTxInput(trx *Transaction, result *ExtractResul
 }
 
 //ExtractTxInput 提取交易单输入部分
-func (bs *ETPBlockScanner) extractTxOutput(trx *Transaction, result *ExtractResult, scanTargetFunc openwallet.BlockScanTargetFunc) (map[string]ExtractOutput, map[string][]string, decimal.Decimal) {
+func (bs *ETPBlockScanner) extractTxOutput(trx *Transaction, result *ExtractResult, scanTargetFunc openwallet.BlockScanTargetFuncV2) (map[string]ExtractOutput, map[string][]string, decimal.Decimal) {
 
 	var (
 		totalAmount        = decimal.Zero
@@ -832,11 +831,11 @@ func (bs *ETPBlockScanner) extractTxOutput(trx *Transaction, result *ExtractResu
 		amount = amount.Shift(-bs.wm.Decimal())
 		n := output.N
 		addr := output.Addr
-		sourceKey, ok := scanTargetFunc(openwallet.ScanTarget{
-			Address:          addr,
-			Symbol:           bs.wm.Symbol(),
-			BalanceModelType: openwallet.BalanceModelTypeAddress})
-		if ok {
+		targetResult := scanTargetFunc(openwallet.ScanTargetParam{
+			ScanTarget:     addr,
+			Symbol:         bs.wm.Symbol(),
+			ScanTargetType: openwallet.ScanTargetTypeAccountAddress})
+		if targetResult.Exist {
 
 			if output.IsToken {
 
@@ -868,14 +867,14 @@ func (bs *ETPBlockScanner) extractTxOutput(trx *Transaction, result *ExtractResu
 					sourceKeyExtractOutput = make(ExtractOutput)
 				}
 
-				extractOutput := sourceKeyExtractOutput[sourceKey]
+				extractOutput := sourceKeyExtractOutput[targetResult.SourceKey]
 				if extractOutput == nil {
 					extractOutput = make([]*openwallet.TxOutPut, 0)
 				}
 
 				extractOutput = append(extractOutput, &outPut)
 
-				sourceKeyExtractOutput[sourceKey] = extractOutput
+				sourceKeyExtractOutput[targetResult.SourceKey] = extractOutput
 				tokenExtractOutput[output.AssetAttachment.Symbol] = sourceKeyExtractOutput
 
 			} else {
@@ -900,14 +899,14 @@ func (bs *ETPBlockScanner) extractTxOutput(trx *Transaction, result *ExtractResu
 					sourceKeyExtractOutput = make(ExtractOutput)
 				}
 
-				extractOutput := sourceKeyExtractOutput[sourceKey]
+				extractOutput := sourceKeyExtractOutput[targetResult.SourceKey]
 				if extractOutput == nil {
 					extractOutput = make([]*openwallet.TxOutPut, 0)
 				}
 
 				extractOutput = append(extractOutput, &outPut)
 
-				sourceKeyExtractOutput[sourceKey] = extractOutput
+				sourceKeyExtractOutput[targetResult.SourceKey] = extractOutput
 				tokenExtractOutput[bs.wm.Symbol()] = sourceKeyExtractOutput
 
 			}
@@ -1001,7 +1000,19 @@ func (bs *ETPBlockScanner) ExtractTransactionData(txid string, scanTargetFunc op
 		return nil, err
 	}
 
-	result := bs.ExtractTransaction(header.Height, header.Hash, trx, scanTargetFunc)
+	scanTargetFuncV2 := func(target openwallet.ScanTargetParam) openwallet.ScanTargetResult {
+		sourceKey, ok := scanTargetFunc(openwallet.ScanTarget{
+			Address:          target.ScanTarget,
+			Symbol:           bs.wm.Symbol(),
+			BalanceModelType: bs.wm.BalanceModelType(),
+		})
+		return openwallet.ScanTargetResult{
+			SourceKey: sourceKey,
+			Exist:     ok,
+		}
+	}
+
+	result := bs.ExtractTransaction(header.Height, header.Hash, trx, scanTargetFuncV2)
 	if !result.Success {
 		return nil, fmt.Errorf("extract transaction failed")
 	}

@@ -16,11 +16,12 @@
 package openwtester
 
 import (
-	"github.com/blocktree/openwallet/openw"
+	"github.com/blocktree/openwallet/v2/openw"
 	"testing"
+	"time"
 
-	"github.com/blocktree/openwallet/log"
-	"github.com/blocktree/openwallet/openwallet"
+	"github.com/blocktree/openwallet/v2/log"
+	"github.com/blocktree/openwallet/v2/openwallet"
 )
 
 func testGetAssetsAccountBalance(tm *openw.WalletManager, walletID, accountID string) {
@@ -120,18 +121,17 @@ func testSubmitTransactionStep(tm *openw.WalletManager, rawTx *openwallet.RawTra
 func TestTransfer(t *testing.T) {
 
 	addrs := []string{
-		"M8zhymCjZD9ZzSR9skirEhJnNDEdcJBb6c",
+		//"M8zhymCjZD9ZzSR9skirEhJnNDEdcJBb6c",
 		//"MC3byQPhQS9dQYkY4ME5R94j5GksWvDYTR",
 		//"MDgW56oXUFMRfSuRhPcyoWcGwSyj81hUnM",
-		//"MHr2w1nQ2aiGuh7McpAvi5TMvqmzVLJeNC",
+		"MHr2w1nQ2aiGuh7McpAvi5TMvqmzVLJeNC",
 		//"MMRbpJdtxXeNmdwRZa4JjNgraL2XKUeg4e",
 		//"MNVJdDfesiRdPMWz1QCnyvAXTbTcfdaBun",
 
 		//"MSz3Ca3SJGDezZRXDNJG5pHGgbxQktikce", //手续费地址
 
-		//"MPZd2vDvaFGwPW1L8qjN2CguFs7ZSRkY6u",
+		//"MVGArUVejtWdzoU72krCvQVAkqnwwjDpue",
 	}
-
 
 	tm := testInitWalletManager()
 	walletID := "WHVMNrUKoKqAQ8zUDKTo5FsRczs3jcyBhQ"
@@ -141,7 +141,7 @@ func TestTransfer(t *testing.T) {
 
 	for _, to := range addrs {
 
-		rawTx, err := testCreateTransactionStep(tm, walletID, accountID, to, "1", "", nil)
+		rawTx, err := testCreateTransactionStep(tm, walletID, accountID, to, "0.01", "", nil)
 		if err != nil {
 			return
 		}
@@ -163,39 +163,37 @@ func TestTransfer(t *testing.T) {
 
 	}
 
-
-
 }
-
 
 func TestTransfer_Token(t *testing.T) {
 
-	addrs := []string{
+	addrs := make([]string, 0)
+
+	addrs = []string{
 		"M8zhymCjZD9ZzSR9skirEhJnNDEdcJBb6c",
 		"MC3byQPhQS9dQYkY4ME5R94j5GksWvDYTR",
 		"MDgW56oXUFMRfSuRhPcyoWcGwSyj81hUnM",
-		"MHr2w1nQ2aiGuh7McpAvi5TMvqmzVLJeNC",
+		//"MHr2w1nQ2aiGuh7McpAvi5TMvqmzVLJeNC",
 		"MMRbpJdtxXeNmdwRZa4JjNgraL2XKUeg4e",
 		"MNVJdDfesiRdPMWz1QCnyvAXTbTcfdaBun",
 
 		//"MSz3Ca3SJGDezZRXDNJG5pHGgbxQktikce", //手续费地址
 
-		//"MC4DKZjDUrcP7TkSCCCsdMyDbExaEC4mEZ",
-		//"M8fUEbid4PMM377EbvHbU2LGTLCXqa5qAY",
-		//"MHgBzPAczeZ26c8FWDcF5qA5CLzJoW4iz4",
-		//"MRRm8xqkikTbkKTL36f1D4VcgUHEBpLWLs",
-		//"MRhvNDsWKLzR6N7kD7MmxnJDRgRiPYUXKa",
-		//"MLXtP3pmEAAAfbPSFy64YrQ3CFo6m41cRL",
-		//"MHSV8RrA7JYcbzKkdzt4rUfB7qj97XZvbB",
-		//"MKADoYLgBKSFTeuAVP1SPDsUfKhNV8ffe6",
-		//"MMRjfzsNHSmXMmrmvgZuPuKNWgc8hNhmoL",
-		//"MEumHH5pfEVEUgK9G56uhBMFBuJVxLSKiB",
+		//"MWCkqfboaFwD3536QfYJnKXL5AcSpBVnMq",
 	}
-
 
 	tm := testInitWalletManager()
 	walletID := "WHVMNrUKoKqAQ8zUDKTo5FsRczs3jcyBhQ"
 	accountID := "74Yy2VDrRCWhzA7NZ3foYNCdykoPjdYmE9A2RabmxMjN"
+
+	//addrList, err := tm.GetAddressList(testApp, walletID, "CDpf4PEZGWhbzevnRVTiDqACmnsrwJEKbzdSnpwwL1vz", 0, -1, false)
+	//if err != nil {
+	//	log.Error("unexpected error:", err)
+	//	return
+	//}
+	//for _, w := range addrList {
+	//	addrs = append(addrs, w.Address)
+	//}
 
 	contract := openwallet.SmartContract{
 		Address:  "DNA",
@@ -209,8 +207,8 @@ func TestTransfer_Token(t *testing.T) {
 
 	testGetAssetsAccountTokenBalance(tm, walletID, accountID, contract)
 
-	for _, to := range addrs {
-		rawTx, err := testCreateTransactionStep(tm, walletID, accountID, to, "0.123", "", &contract)
+	for i, to := range addrs {
+		rawTx, err := testCreateTransactionStep(tm, walletID, accountID, to, "1", "", &contract)
 		if err != nil {
 			return
 		}
@@ -229,9 +227,13 @@ func TestTransfer_Token(t *testing.T) {
 		if err != nil {
 			return
 		}
+
+		if i != 0 && i%30 == 0 {
+			time.Sleep(1 * time.Minute)
+		}
+
 	}
 }
-
 
 func TestSummary(t *testing.T) {
 	tm := testInitWalletManager()
@@ -277,8 +279,6 @@ func TestSummary(t *testing.T) {
 
 }
 
-
-
 func TestSummary_Token(t *testing.T) {
 
 	tm := testInitWalletManager()
@@ -296,44 +296,53 @@ func TestSummary_Token(t *testing.T) {
 
 	//address: MSz3Ca3SJGDezZRXDNJG5pHGgbxQktikce
 	feesSupport := openwallet.FeesSupportAccount{
-		AccountID: "J2RnFngmFXSTcW4eGaR19LaZGCzTrRuJshcyJQsfw7TF",
+		AccountID:        "J2RnFngmFXSTcW4eGaR19LaZGCzTrRuJshcyJQsfw7TF",
 		FeesSupportScale: "1",
 	}
 
-	testGetAssetsAccountBalance(tm, walletID, accountID)
-
-	testGetAssetsAccountTokenBalance(tm, walletID, accountID, contract)
-
-	rawTxArray, err := testCreateSummaryTransactionStep(tm, walletID, accountID,
-		summaryAddress, "", "", "",
-		0, 200, &contract, &feesSupport)
+	account, err := tm.GetAssetsAccountInfo(testApp, walletID, accountID)
 	if err != nil {
-		log.Errorf("CreateSummaryTransaction failed, unexpected error: %v", err)
+		log.Errorf("GetAssetsAccountInfo failed, unexpected error: %v", err)
 		return
 	}
 
-	//执行汇总交易
-	for _, rawTxWithErr := range rawTxArray {
+	addressLimit := 300
+	//分页汇总交易
+	for i := 0; i < int(account.AddressIndex)+1; i = i + addressLimit {
+		testGetAssetsAccountBalance(tm, walletID, accountID)
 
-		if rawTxWithErr.Error != nil {
-			log.Error(rawTxWithErr.Error.Error())
-			continue
-		}
+		testGetAssetsAccountTokenBalance(tm, walletID, accountID, contract)
 
-		_, err = testSignTransactionStep(tm, rawTxWithErr.RawTx)
+		rawTxArray, err := testCreateSummaryTransactionStep(tm, walletID, accountID,
+			summaryAddress, "", "", "",
+			i, addressLimit, &contract, &feesSupport)
 		if err != nil {
+			log.Errorf("CreateSummaryTransaction failed, unexpected error: %v", err)
 			return
 		}
 
-		_, err = testVerifyTransactionStep(tm, rawTxWithErr.RawTx)
-		if err != nil {
-			return
-		}
+		//执行汇总交易
+		for _, rawTxWithErr := range rawTxArray {
 
-		_, err = testSubmitTransactionStep(tm, rawTxWithErr.RawTx)
-		if err != nil {
-			return
+			if rawTxWithErr.Error != nil {
+				log.Error(rawTxWithErr.Error.Error())
+				continue
+			}
+
+			_, err = testSignTransactionStep(tm, rawTxWithErr.RawTx)
+			if err != nil {
+				return
+			}
+
+			_, err = testVerifyTransactionStep(tm, rawTxWithErr.RawTx)
+			if err != nil {
+				return
+			}
+
+			_, err = testSubmitTransactionStep(tm, rawTxWithErr.RawTx)
+			if err != nil {
+				return
+			}
 		}
 	}
-
 }

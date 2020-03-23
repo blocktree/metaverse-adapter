@@ -3,6 +3,7 @@ package metaverse_addrdec
 import (
 	"github.com/blocktree/go-owaddress"
 	"github.com/blocktree/go-owcdrivers/addressEncoder"
+	"github.com/blocktree/openwallet/v2/openwallet"
 )
 
 var (
@@ -21,6 +22,7 @@ var (
 
 //AddressDecoderV2
 type AddressDecoderV2 struct {
+	*openwallet.AddressDecoderV2Base
 	IsTestNet bool
 }
 

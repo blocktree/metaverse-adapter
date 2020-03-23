@@ -16,7 +16,7 @@
 package metaverse
 
 import (
-	"github.com/blocktree/openwallet/openwallet"
+	"github.com/blocktree/openwallet/v2/openwallet"
 	"github.com/shopspring/decimal"
 )
 
@@ -36,7 +36,7 @@ func (decoder *ContractDecoder) GetTokenBalanceByAddress(contract openwallet.Sma
 
 	var tokenBalanceList []*openwallet.TokenBalance
 
-	for i:=0; i<len(address); i++ {
+	for i := 0; i < len(address); i++ {
 
 		asset, _ := decoder.wm.GetAddressAsset(address[i], contract.Address)
 		assetBalance, _ := decimal.NewFromString(asset.Quantity)

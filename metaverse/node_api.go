@@ -16,8 +16,8 @@
 package metaverse
 
 import (
-	"github.com/blocktree/openwallet/log"
-	"github.com/blocktree/openwallet/openwallet"
+	"github.com/blocktree/openwallet/v2/log"
+	"github.com/blocktree/openwallet/v2/openwallet"
 	"github.com/imroc/req"
 	"github.com/tidwall/gjson"
 )

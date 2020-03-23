@@ -18,7 +18,7 @@ package metaverse
 import (
 	"fmt"
 	"github.com/blocktree/go-owcdrivers/mateverseTransaction"
-	"github.com/blocktree/openwallet/openwallet"
+	"github.com/blocktree/openwallet/v2/openwallet"
 	"github.com/shopspring/decimal"
 	"time"
 )
@@ -483,6 +483,12 @@ func (decoder *TransactionDecoder) createRawTransaction(
 		return err
 	}
 
+	if len(etpTx.Vins) != len(inputs) {
+		errStr := "inputs from raw hex is not equal to tx vins"
+		decoder.wm.Log.Errorf(errStr)
+		return fmt.Errorf(errStr)
+	}
+
 	//装配输入
 	for i, input := range etpTx.Vins {
 
@@ -874,7 +880,11 @@ func (decoder *TransactionDecoder) getFeeSupportAccountAvailableETPAndTokens(wra
 
 		tokenBalance, _ := decoder.wm.GetAddressAsset(addr.Address, tokenAddress)
 		if tokenBalance != nil {
-			availableTokens = append(availableTokens, tokenBalance)
+			//TODO: 大于0的才添加
+			tokenAmount, _ := decimal.NewFromString(tokenBalance.Quantity)
+			if tokenAmount.GreaterThan(decimal.Zero) {
+				availableTokens = append(availableTokens, tokenBalance)
+			}
 		}
 	}
 

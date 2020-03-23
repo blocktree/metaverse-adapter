@@ -17,10 +17,10 @@ package openwtester
 
 import (
 	"github.com/astaxie/beego/config"
-	"github.com/blocktree/openwallet/common/file"
-	"github.com/blocktree/openwallet/log"
-	"github.com/blocktree/openwallet/openw"
-	"github.com/blocktree/openwallet/openwallet"
+	"github.com/blocktree/openwallet/v2/common/file"
+	"github.com/blocktree/openwallet/v2/log"
+	"github.com/blocktree/openwallet/v2/openw"
+	"github.com/blocktree/openwallet/v2/openwallet"
 	"path/filepath"
 	"testing"
 )
@@ -54,36 +54,27 @@ func (sub *subscriberSingle) BlockExtractDataNotify(sourceKey string, data *open
 }
 
 
+//BlockExtractSmartContractDataNotify 区块提取智能合约交易结果通知
+func (sub *subscriberSingle) BlockExtractSmartContractDataNotify(sourceKey string, data *openwallet.SmartContractReceipt) error {
+
+	return nil
+}
+
 func TestSubscribeAddress(t *testing.T) {
 
 	var (
 		endRunning = make(chan bool, 1)
 		symbol     = "ETP"
 		addrs      = map[string]string{
-			"MUsTC2PCF52yNvAeGNXJUKy9CfLVHV9yYj": "sender",
-			"MHr2w1nQ2aiGuh7McpAvi5TMvqmzVLJeNC": "receiver",
+			"M8zhymCjZD9ZzSR9skirEhJnNDEdcJBb6c": "sender",
+			"MUsTC2PCF52yNvAeGNXJUKy9CfLVHV9yYj": "receiver",
 			"MSz3Ca3SJGDezZRXDNJG5pHGgbxQktikce": "fee",
 		}
 	)
 
-	//GetSourceKeyByAddress 获取地址对应的数据源标识
-	scanTargetFunc := func(target openwallet.ScanTarget) (string, bool) {
-		//如果余额模型是地址，查找地址表
-		if target.BalanceModelType == openwallet.BalanceModelTypeAddress {
-			key, ok := addrs[target.Address]
-			if !ok {
-				return "", false
-			}
-			return key, true
-		} else {
-			//如果余额模型是账户，用别名操作账户的别名
-			key, ok := addrs[target.Alias]
-			if !ok {
-				return "", false
-			}
-			return key, true
-		}
-
+	scanTargetFunc := func(target openwallet.ScanTargetParam) openwallet.ScanTargetResult {
+		sourceKey, ok := addrs[target.ScanTarget]
+		return openwallet.ScanTargetResult{SourceKey: sourceKey, Exist: ok, TargetInfo: nil,}
 	}
 
 	assetsMgr, err := openw.GetAssetsAdapter(symbol)
@@ -120,14 +111,14 @@ func TestSubscribeAddress(t *testing.T) {
 		scanner.SetBlockchainDAI(dai)
 	}
 
-	//scanner.SetRescanBlockHeight(2970600)
+	scanner.SetRescanBlockHeight(3488283)
 
 	if scanner == nil {
 		log.Error(symbol, "is not support block scan")
 		return
 	}
 
-	scanner.SetBlockScanTargetFunc(scanTargetFunc)
+	scanner.SetBlockScanTargetFuncV2(scanTargetFunc)
 
 	sub := subscriberSingle{}
 	scanner.AddObserver(&sub)
@@ -140,8 +131,8 @@ func TestSubscribeAddress(t *testing.T) {
 func TestExtractTransactionData(t *testing.T) {
 
 	var (
-		symbol     = "ETP"
-		addrs      = map[string]string{
+		symbol = "ETP"
+		addrs  = map[string]string{
 			"1FKGvwjy8FYHjMNupydJaBdyFNceoQ7fxL": "sender",
 			"16AFYCFtEJe9KDrGUSPkofa3sDmga7n6pR": "receiver",
 		}

@@ -17,8 +17,9 @@ package metaverse
 
 import (
 	"fmt"
-	"github.com/blocktree/openwallet/log"
-	"github.com/blocktree/openwallet/openwallet"
+	"github.com/blocktree/metaverse-adapter/metaverse_addrdec"
+	"github.com/blocktree/openwallet/v2/log"
+	"github.com/blocktree/openwallet/v2/openwallet"
 	"github.com/tidwall/gjson"
 )
 
@@ -27,6 +28,7 @@ type WalletManager struct {
 	WalletClient    *Client                         // 节点客户端
 	Config          *WalletConfig                   //钱包管理配置
 	Decoder         openwallet.AddressDecoder       //地址编码器
+	DecoderV2       openwallet.AddressDecoderV2     //地址编码器
 	TxDecoder       openwallet.TransactionDecoder   //交易单编码器
 	Log             *log.OWLogger                   //日志工具
 	Blockscanner    openwallet.BlockScanner         //区块扫描器
@@ -37,6 +39,7 @@ func NewWalletManager() *WalletManager {
 	wm := WalletManager{}
 	wm.Config = NewConfig(Symbol)
 	wm.Decoder = NewAddressDecoder(&wm)
+	wm.DecoderV2 = &metaverse_addrdec.Default
 	wm.Log = log.NewOWLogger(wm.Symbol())
 	wm.Blockscanner = NewETPBlockScanner(&wm)
 	wm.TxDecoder = NewTransactionDecoder(&wm)
@@ -162,8 +165,8 @@ func (wm *WalletManager) GetAddressAsset(address, symbol string) (*TokenBalance,
 func (wm *WalletManager) CreateRawTx(sender []string, receivers map[string]string, change, fees, symbol string, isToken bool) (string, *openwallet.Error) {
 
 	request := map[string]interface{}{
-		"senders":   sender,
-		"fee":       fees,
+		"senders": sender,
+		"fee":     fees,
 	}
 
 	comb := make([]string, 0)
@@ -199,7 +202,6 @@ func (wm *WalletManager) CreateRawTx(sender []string, receivers map[string]strin
 
 	return rawHex, nil
 }
-
 
 // DecodeRawTx
 func (wm *WalletManager) DecodeRawTx(rawHex string) (*Transaction, *openwallet.Error) {

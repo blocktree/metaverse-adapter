@@ -17,7 +17,7 @@ package metaverse
 
 import (
 	"github.com/astaxie/beego/config"
-	"github.com/blocktree/openwallet/log"
+	"github.com/blocktree/openwallet/v2/log"
 	"path/filepath"
 	"testing"
 )
@@ -102,7 +102,7 @@ func TestWalletManager_GetBlockByHeight(t *testing.T) {
 
 func TestWalletManager_GetTransaction(t *testing.T) {
 
-	tx, err := tw.GetTransaction("d2573a6ca01ebb96fd3987012e239cc8320592af436e111aaf08572cf98b6adb")
+	tx, err := tw.GetTransaction("485b64ce2dc3fac43c3a9cc35f9158e0b11ccf11930ff1f2993d74be40d96605")
 
 	if err != nil {
 		t.Errorf("GetTransaction failed unexpected error: %v\n", err)
@@ -134,7 +134,7 @@ func TestWalletManager_GetTransaction(t *testing.T) {
 }
 
 func TestWalletManager_GetAddressETP(t *testing.T) {
-	balance, err := tw.GetAddressETP("MUsTC2PCF52yNvAeGNXJUKy9CfLVHV9yYj")
+	balance, err := tw.GetAddressETP("234234")
 
 	if err != nil {
 		t.Errorf("GetAddressETP failed unexpected error: %v\n", err)
@@ -144,7 +144,7 @@ func TestWalletManager_GetAddressETP(t *testing.T) {
 }
 
 func TestWalletManager_GetAddressAsset(t *testing.T) {
-	balance, err := tw.GetAddressAsset("MUsTC2PCF52yNvAeGNXJUKy9CfLVHV9yYj", "DNA")
+	balance, err := tw.GetAddressAsset("33434", "DNA")
 
 	if err != nil {
 		t.Errorf("GetAddressAsset failed unexpected error: %v\n", err)
@@ -155,10 +155,10 @@ func TestWalletManager_GetAddressAsset(t *testing.T) {
 
 func TestWalletManager_CreateRawTx(t *testing.T) {
 	sender := "MUsTC2PCF52yNvAeGNXJUKy9CfLVHV9yYj"
-	receiver := "MTDcfh43xT93odL1Y2uULhRLeWED2fDvBX"
+	receiver := "B6UbwNZrz82QqUPBsSCPUkEJ1CjxSzSwnewziCseCt4c"
 	amount := "100000"
 	fees := tw.Config.MinFees.Shift(tw.Decimal()).String()
-	rawHex, err := tw.CreateRawTx([]string{sender}, map[string]string{receiver: amount}, "",  fees, "", false)
+	rawHex, err := tw.CreateRawTx([]string{sender}, map[string]string{receiver: amount}, "", fees, "", false)
 	if err != nil {
 		t.Errorf("CreateRawTx failed unexpected error: %v\n", err)
 		return
