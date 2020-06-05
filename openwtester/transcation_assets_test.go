@@ -16,12 +16,10 @@
 package openwtester
 
 import (
-	"github.com/blocktree/openwallet/v2/openw"
-	"testing"
-	"time"
-
 	"github.com/blocktree/openwallet/v2/log"
+	"github.com/blocktree/openwallet/v2/openw"
 	"github.com/blocktree/openwallet/v2/openwallet"
+	"testing"
 )
 
 func testGetAssetsAccountBalance(tm *openw.WalletManager, walletID, accountID string) {
@@ -170,16 +168,18 @@ func TestTransfer_Token(t *testing.T) {
 	addrs := make([]string, 0)
 
 	addrs = []string{
-		"M8zhymCjZD9ZzSR9skirEhJnNDEdcJBb6c",
-		"MC3byQPhQS9dQYkY4ME5R94j5GksWvDYTR",
-		"MDgW56oXUFMRfSuRhPcyoWcGwSyj81hUnM",
+		//"M8zhymCjZD9ZzSR9skirEhJnNDEdcJBb6c",
+		//"MC3byQPhQS9dQYkY4ME5R94j5GksWvDYTR",
+		//"MDgW56oXUFMRfSuRhPcyoWcGwSyj81hUnM",
 		//"MHr2w1nQ2aiGuh7McpAvi5TMvqmzVLJeNC",
-		"MMRbpJdtxXeNmdwRZa4JjNgraL2XKUeg4e",
-		"MNVJdDfesiRdPMWz1QCnyvAXTbTcfdaBun",
+		//"MMRbpJdtxXeNmdwRZa4JjNgraL2XKUeg4e",
+		//"MNVJdDfesiRdPMWz1QCnyvAXTbTcfdaBun",
 
 		//"MSz3Ca3SJGDezZRXDNJG5pHGgbxQktikce", //手续费地址
 
 		//"MWCkqfboaFwD3536QfYJnKXL5AcSpBVnMq",
+
+		"MExjWT4Wq1M7BgE8zci2rWfWP5HLdEP8m9",
 	}
 
 	tm := testInitWalletManager()
@@ -207,7 +207,7 @@ func TestTransfer_Token(t *testing.T) {
 
 	testGetAssetsAccountTokenBalance(tm, walletID, accountID, contract)
 
-	for i, to := range addrs {
+	for _, to := range addrs {
 		rawTx, err := testCreateTransactionStep(tm, walletID, accountID, to, "1", "", &contract)
 		if err != nil {
 			return
@@ -223,14 +223,10 @@ func TestTransfer_Token(t *testing.T) {
 			return
 		}
 
-		_, err = testSubmitTransactionStep(tm, rawTx)
-		if err != nil {
-			return
-		}
-
-		if i != 0 && i%30 == 0 {
-			time.Sleep(1 * time.Minute)
-		}
+		//_, err = testSubmitTransactionStep(tm, rawTx)
+		//if err != nil {
+		//	return
+		//}
 
 	}
 }

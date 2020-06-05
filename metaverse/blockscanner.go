@@ -66,7 +66,7 @@ func NewETPBlockScanner(wm *WalletManager) *ETPBlockScanner {
 	bs.extractingCH = make(chan struct{}, maxExtractingSize)
 	bs.wm = wm
 	bs.IsScanMemPool = true
-	bs.RescanLastBlockCount = 0
+	bs.RescanLastBlockCount = 2
 
 	//设置扫描任务
 	bs.SetTask(bs.ScanBlockTask)
@@ -220,7 +220,7 @@ func (bs *ETPBlockScanner) ScanBlockTask() {
 	}
 
 	//重扫前N个块，为保证记录找到
-	for i := currentHeight - bs.RescanLastBlockCount; i < currentHeight; i++ {
+	for i := currentHeight - bs.RescanLastBlockCount; i <= currentHeight; i++ {
 		bs.scanBlock(i)
 	}
 
