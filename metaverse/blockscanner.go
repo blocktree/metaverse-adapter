@@ -66,7 +66,7 @@ func NewETPBlockScanner(wm *WalletManager) *ETPBlockScanner {
 	bs.extractingCH = make(chan struct{}, maxExtractingSize)
 	bs.wm = wm
 	bs.IsScanMemPool = true
-	bs.RescanLastBlockCount = 2
+	bs.RescanLastBlockCount = 0
 
 	//设置扫描任务
 	bs.SetTask(bs.ScanBlockTask)
@@ -1058,7 +1058,7 @@ func (bs *ETPBlockScanner) GetBalanceByAddress(address ...string) ([]*openwallet
 
 		etpBalance, err := bs.wm.GetAddressETP(addr)
 		if err == nil {
-			available, _ := decimal.NewFromString(etpBalance.Available)
+			available, _ := decimal.NewFromString(etpBalance.Confirmed)
 			available = available.Shift(-bs.wm.Decimal())
 			obj.Balance = available.String()
 			obj.ConfirmBalance = available.String()

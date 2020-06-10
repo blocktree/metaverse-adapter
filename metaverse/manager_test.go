@@ -134,7 +134,7 @@ func TestWalletManager_GetTransaction(t *testing.T) {
 }
 
 func TestWalletManager_GetAddressETP(t *testing.T) {
-	balance, err := tw.GetAddressETP("234234")
+	balance, err := tw.GetAddressETP("MUsTC2PCF52yNvAeGNXJUKy9CfLVHV9yYj")
 
 	if err != nil {
 		t.Errorf("GetAddressETP failed unexpected error: %v\n", err)
