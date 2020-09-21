@@ -102,7 +102,7 @@ func TestWalletManager_GetBlockByHeight(t *testing.T) {
 
 func TestWalletManager_GetTransaction(t *testing.T) {
 
-	tx, err := tw.GetTransaction("485b64ce2dc3fac43c3a9cc35f9158e0b11ccf11930ff1f2993d74be40d96605")
+	tx, err := tw.GetTransaction("f127b3feef9c25f494a8b1c7337ff753ee012e1912cb7a66f1ea703f8bf89d3d")
 
 	if err != nil {
 		t.Errorf("GetTransaction failed unexpected error: %v\n", err)
@@ -155,10 +155,20 @@ func TestWalletManager_GetAddressAsset(t *testing.T) {
 
 func TestWalletManager_CreateRawTx(t *testing.T) {
 	sender := "MUsTC2PCF52yNvAeGNXJUKy9CfLVHV9yYj"
-	receiver := "B6UbwNZrz82QqUPBsSCPUkEJ1CjxSzSwnewziCseCt4c"
-	amount := "100000"
+	//receiver := "MHr2w1nQ2aiGuh7McpAvi5TMvqmzVLJeNC"
+	//amount := "180920000"
+
+	receivers := map[string]string{
+		"M8zhymCjZD9ZzSR9skirEhJnNDEdcJBb6c": "1000000",
+		"MC3byQPhQS9dQYkY4ME5R94j5GksWvDYTR": "1000000",
+		"MDgW56oXUFMRfSuRhPcyoWcGwSyj81hUnM": "1000000",
+		"MHr2w1nQ2aiGuh7McpAvi5TMvqmzVLJeNC": "1000000",
+		"MMRbpJdtxXeNmdwRZa4JjNgraL2XKUeg4e": "1000000",
+		"MNVJdDfesiRdPMWz1QCnyvAXTbTcfdaBun": "1000000",
+	}
+
 	fees := tw.Config.MinFees.Shift(tw.Decimal()).String()
-	rawHex, err := tw.CreateRawTx([]string{sender}, map[string]string{receiver: amount}, "", fees, "", false)
+	rawHex, err := tw.CreateRawTx([]string{sender}, receivers, "", fees, "DNA", false)
 	if err != nil {
 		t.Errorf("CreateRawTx failed unexpected error: %v\n", err)
 		return
@@ -167,7 +177,7 @@ func TestWalletManager_CreateRawTx(t *testing.T) {
 }
 
 func TestWalletManager_DecodeRawTx(t *testing.T) {
-	rawHex := "0400000001d58650140f9957acec4cabc9a05a0e332fa7123d394ce89791f6058466c722910000000000ffffffff02a0860100000000001976a914d3e7f1c96a7be7903867a17f18e16cae8fad8d4d88ac0100000000000000501c993b000000001976a914e607f73ea755a41b4b649114a9bed5dba1ca8da088ac010000000000000000000000"
+	rawHex := "0400000001b4824e873167a259e434eccc70672c52bebb7b17552fcde6682c13715add450c0100000000ffffffff0740420f00000000001976a914945b78749c6aafd087498350d829055acec0b0cb88ac010000000000000040420f00000000001976a914a006e8e3c6265226f66a98ec70a870247c41fa2088ac010000000000000040420f00000000001976a9140c04b4ed9d43fe1b1bbc545a9f9715528c7af52888ac010000000000000040420f00000000001976a9142d79517a80e7f671c7dc30ebdda45c2c786881df88ac010000000000000040420f00000000001976a9143f6be878695a9366d85fdc0663819584665f359b88ac010000000000000040420f00000000001976a9146d19ea7e5f4c9620a2a712fdd66ae25ea2974e7788ac010000000000000050386d0a000000001976a914e607f73ea755a41b4b649114a9bed5dba1ca8da088ac010000000000000000000000"
 	tx, err := tw.DecodeRawTx(rawHex)
 	if err != nil {
 		t.Errorf("DecodeRawTx failed unexpected error: %v\n", err)

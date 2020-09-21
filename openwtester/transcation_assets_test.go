@@ -48,10 +48,29 @@ func testCreateTransactionStep(tm *openw.WalletManager, walletID, accountID, to,
 	//	return nil, err
 	//}
 
-	rawTx, err := tm.CreateTransaction(testApp, walletID, accountID, amount, to, feeRate, "", contract)
+	rawTx, err := tm.CreateTransaction(testApp, walletID, accountID, amount, to, feeRate, "", contract, nil)
 
 	if err != nil {
 		log.Error("CreateTransaction failed, unexpected error:", err)
+		return nil, err
+	}
+
+	return rawTx, nil
+}
+
+
+func testCreateBatchTransactionStep(tm *openw.WalletManager, walletID, accountID, feeRate string, to map[string]string, contract *openwallet.SmartContract) (*openwallet.RawTransaction, error) {
+
+	//err := tm.RefreshAssetsAccountBalance(testApp, accountID)
+	//if err != nil {
+	//	log.Error("RefreshAssetsAccountBalance failed, unexpected error:", err)
+	//	return nil, err
+	//}
+
+	rawTx, err := tm.CreateBatchTransaction(testApp, walletID, accountID, feeRate, "", to, contract, nil)
+
+	if err != nil {
+		log.Error("CreateBatchTransaction failed, unexpected error:", err)
 		return nil, err
 	}
 
@@ -119,12 +138,12 @@ func testSubmitTransactionStep(tm *openw.WalletManager, rawTx *openwallet.RawTra
 func TestTransfer(t *testing.T) {
 
 	addrs := []string{
-		//"M8zhymCjZD9ZzSR9skirEhJnNDEdcJBb6c",
-		//"MC3byQPhQS9dQYkY4ME5R94j5GksWvDYTR",
-		//"MDgW56oXUFMRfSuRhPcyoWcGwSyj81hUnM",
+		"M8zhymCjZD9ZzSR9skirEhJnNDEdcJBb6c",
+		"MC3byQPhQS9dQYkY4ME5R94j5GksWvDYTR",
+		"MDgW56oXUFMRfSuRhPcyoWcGwSyj81hUnM",
 		"MHr2w1nQ2aiGuh7McpAvi5TMvqmzVLJeNC",
-		//"MMRbpJdtxXeNmdwRZa4JjNgraL2XKUeg4e",
-		//"MNVJdDfesiRdPMWz1QCnyvAXTbTcfdaBun",
+		"MMRbpJdtxXeNmdwRZa4JjNgraL2XKUeg4e",
+		"MNVJdDfesiRdPMWz1QCnyvAXTbTcfdaBun",
 
 		//"MSz3Ca3SJGDezZRXDNJG5pHGgbxQktikce", //手续费地址
 
@@ -168,18 +187,18 @@ func TestTransfer_Token(t *testing.T) {
 	addrs := make([]string, 0)
 
 	addrs = []string{
-		//"M8zhymCjZD9ZzSR9skirEhJnNDEdcJBb6c",
-		//"MC3byQPhQS9dQYkY4ME5R94j5GksWvDYTR",
-		//"MDgW56oXUFMRfSuRhPcyoWcGwSyj81hUnM",
-		//"MHr2w1nQ2aiGuh7McpAvi5TMvqmzVLJeNC",
-		//"MMRbpJdtxXeNmdwRZa4JjNgraL2XKUeg4e",
-		//"MNVJdDfesiRdPMWz1QCnyvAXTbTcfdaBun",
+		"M8zhymCjZD9ZzSR9skirEhJnNDEdcJBb6c",
+		"MC3byQPhQS9dQYkY4ME5R94j5GksWvDYTR",
+		"MDgW56oXUFMRfSuRhPcyoWcGwSyj81hUnM",
+		"MHr2w1nQ2aiGuh7McpAvi5TMvqmzVLJeNC",
+		"MMRbpJdtxXeNmdwRZa4JjNgraL2XKUeg4e",
+		"MNVJdDfesiRdPMWz1QCnyvAXTbTcfdaBun",
 
 		//"MSz3Ca3SJGDezZRXDNJG5pHGgbxQktikce", //手续费地址
 
 		//"MWCkqfboaFwD3536QfYJnKXL5AcSpBVnMq",
 
-		"MExjWT4Wq1M7BgE8zci2rWfWP5HLdEP8m9",
+		//"MExjWT4Wq1M7BgE8zci2rWfWP5HLdEP8m9",
 	}
 
 	tm := testInitWalletManager()
@@ -223,10 +242,10 @@ func TestTransfer_Token(t *testing.T) {
 			return
 		}
 
-		//_, err = testSubmitTransactionStep(tm, rawTx)
-		//if err != nil {
-		//	return
-		//}
+		_, err = testSubmitTransactionStep(tm, rawTx)
+		if err != nil {
+			return
+		}
 
 	}
 }
@@ -342,4 +361,94 @@ func TestSummary_Token(t *testing.T) {
 			}
 		}
 	}
+}
+
+
+func TestMultiTransfer(t *testing.T) {
+
+	receivers := map[string]string{
+		"M8zhymCjZD9ZzSR9skirEhJnNDEdcJBb6c": "0.01",
+		"MC3byQPhQS9dQYkY4ME5R94j5GksWvDYTR": "0.01",
+		"MDgW56oXUFMRfSuRhPcyoWcGwSyj81hUnM": "0.01",
+		"MHr2w1nQ2aiGuh7McpAvi5TMvqmzVLJeNC": "0.01",
+		"MMRbpJdtxXeNmdwRZa4JjNgraL2XKUeg4e": "0.01",
+		"MNVJdDfesiRdPMWz1QCnyvAXTbTcfdaBun": "0.01",
+	}
+
+	tm := testInitWalletManager()
+	walletID := "WHVMNrUKoKqAQ8zUDKTo5FsRczs3jcyBhQ"
+	accountID := "74Yy2VDrRCWhzA7NZ3foYNCdykoPjdYmE9A2RabmxMjN"
+
+	testGetAssetsAccountBalance(tm, walletID, accountID)
+
+	rawTx, err := testCreateBatchTransactionStep(tm, walletID, accountID,"", receivers, nil)
+	if err != nil {
+		return
+	}
+
+	_, err = testSignTransactionStep(tm, rawTx)
+	if err != nil {
+		return
+	}
+
+	_, err = testVerifyTransactionStep(tm, rawTx)
+	if err != nil {
+		return
+	}
+
+	_, err = testSubmitTransactionStep(tm, rawTx)
+	if err != nil {
+		return
+	}
+
+}
+
+
+func TestMultiTransfer_Token(t *testing.T) {
+
+	receivers := map[string]string{
+		"M8zhymCjZD9ZzSR9skirEhJnNDEdcJBb6c": "1",
+		"MC3byQPhQS9dQYkY4ME5R94j5GksWvDYTR": "1",
+		"MDgW56oXUFMRfSuRhPcyoWcGwSyj81hUnM": "1",
+		"MHr2w1nQ2aiGuh7McpAvi5TMvqmzVLJeNC": "1",
+		"MMRbpJdtxXeNmdwRZa4JjNgraL2XKUeg4e": "1",
+		"MNVJdDfesiRdPMWz1QCnyvAXTbTcfdaBun": "1",
+	}
+
+	tm := testInitWalletManager()
+	walletID := "WHVMNrUKoKqAQ8zUDKTo5FsRczs3jcyBhQ"
+	accountID := "74Yy2VDrRCWhzA7NZ3foYNCdykoPjdYmE9A2RabmxMjN"
+
+	contract := openwallet.SmartContract{
+		Address:  "DNA",
+		Symbol:   "ETP",
+		Name:     "DNA",
+		Token:    "DNA",
+		Decimals: 4,
+	}
+
+	testGetAssetsAccountBalance(tm, walletID, accountID)
+
+	testGetAssetsAccountTokenBalance(tm, walletID, accountID, contract)
+
+	rawTx, err := testCreateBatchTransactionStep(tm, walletID, accountID,"", receivers, &contract)
+	if err != nil {
+		return
+	}
+
+	_, err = testSignTransactionStep(tm, rawTx)
+	if err != nil {
+		return
+	}
+
+	_, err = testVerifyTransactionStep(tm, rawTx)
+	if err != nil {
+		return
+	}
+
+	_, err = testSubmitTransactionStep(tm, rawTx)
+	if err != nil {
+		return
+	}
+
 }

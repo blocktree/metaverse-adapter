@@ -138,6 +138,7 @@ func (decoder *TransactionDecoder) CreateETPRawTransaction(wrapper openwallet.Wa
 		destination         = ""
 		availableETPBalance *ETPBalance
 		limit               = 2000
+		receivers           = make(map[string]string)
 	)
 
 	address, err := wrapper.GetAddressList(0, limit, "AccountID", rawTx.Account.AccountID)
@@ -156,10 +157,13 @@ func (decoder *TransactionDecoder) CreateETPRawTransaction(wrapper openwallet.Wa
 
 	//计算总发送金额
 	for addr, amount := range rawTx.To {
-		totalSend, _ = decimal.NewFromString(amount)
-		totalSend = totalSend
-		destination = addr
-		break
+		//totalSend, _ = decimal.NewFromString(amount)
+		//totalSend = totalSend
+		//destination = addr
+		//break
+		sendAmount, _ := decimal.NewFromString(amount)
+		totalSend = totalSend.Add(sendAmount)
+		receivers[addr] = sendAmount.Shift(decoder.wm.Decimal()).String()
 	}
 
 	if len(rawTx.FeeRate) == 0 {
@@ -192,7 +196,8 @@ func (decoder *TransactionDecoder) CreateETPRawTransaction(wrapper openwallet.Wa
 
 	rawHex, txErr := decoder.wm.CreateRawTx(
 		[]string{availableETPBalance.Address},
-		map[string]string{destination: totalSend.Shift(decoder.wm.Decimal()).String()},
+		receivers,
+		//map[string]string{destination: totalSend.Shift(decoder.wm.Decimal()).String()},
 		"",
 		fees.Shift(decoder.wm.Decimal()).String(),
 		"",
@@ -583,6 +588,7 @@ func (decoder *TransactionDecoder) CreateTokenRawTransaction(wrapper openwallet.
 		availableETPBalance   *ETPBalance
 		availableTokenBalance *TokenBalance
 		limit                 = 2000
+		receivers             = make(map[string]string)
 	)
 
 	tokenAddress := rawTx.Coin.Contract.Address
@@ -604,10 +610,13 @@ func (decoder *TransactionDecoder) CreateTokenRawTransaction(wrapper openwallet.
 
 	//计算总发送金额
 	for addr, amount := range rawTx.To {
-		totalSend, _ = decimal.NewFromString(amount)
-		totalSend = totalSend
-		destination = addr
-		break
+		//totalSend, _ = decimal.NewFromString(amount)
+		//totalSend = totalSend
+		//destination = addr
+		//break
+		sendAmount, _ := decimal.NewFromString(amount)
+		totalSend = totalSend.Add(sendAmount)
+		receivers[addr] = sendAmount.Shift(tokenDecimals).String()
 	}
 
 	if len(rawTx.FeeRate) == 0 {
@@ -657,7 +666,8 @@ func (decoder *TransactionDecoder) CreateTokenRawTransaction(wrapper openwallet.
 
 	rawHex, txErr := decoder.wm.CreateRawTx(
 		[]string{availableTokenBalance.Address},
-		map[string]string{destination: totalSend.Shift(tokenDecimals).String()},
+		receivers,
+		//map[string]string{destination: totalSend.Shift(tokenDecimals).String()},
 		"",
 		fees.Shift(decoder.wm.Decimal()).String(),
 		tokenAddress,
@@ -675,7 +685,7 @@ func (decoder *TransactionDecoder) CreateTokenRawTransaction(wrapper openwallet.
 	decoder.wm.Log.Std.Notice("From Account: %s", accountID)
 	decoder.wm.Log.Std.Notice("To Address: %s", destination)
 	decoder.wm.Log.Std.Notice("Token Address: %s", tokenAddress)
-	decoder.wm.Log.Std.Notice("%d  Fees: %v", fees, decoder.wm.Symbol())
+	decoder.wm.Log.Std.Notice("%v  Fees: %v", fees, decoder.wm.Symbol())
 	decoder.wm.Log.Std.Notice("Receive: %v", totalSend.String())
 	decoder.wm.Log.Std.Notice("-----------------------------------------------")
 
