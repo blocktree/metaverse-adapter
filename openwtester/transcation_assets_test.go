@@ -138,16 +138,16 @@ func testSubmitTransactionStep(tm *openw.WalletManager, rawTx *openwallet.RawTra
 func TestTransfer(t *testing.T) {
 
 	addrs := []string{
-		"M8zhymCjZD9ZzSR9skirEhJnNDEdcJBb6c",
-		"MC3byQPhQS9dQYkY4ME5R94j5GksWvDYTR",
-		"MDgW56oXUFMRfSuRhPcyoWcGwSyj81hUnM",
-		"MHr2w1nQ2aiGuh7McpAvi5TMvqmzVLJeNC",
-		"MMRbpJdtxXeNmdwRZa4JjNgraL2XKUeg4e",
-		"MNVJdDfesiRdPMWz1QCnyvAXTbTcfdaBun",
+		//"M8zhymCjZD9ZzSR9skirEhJnNDEdcJBb6c",
+		//"MC3byQPhQS9dQYkY4ME5R94j5GksWvDYTR",
+		//"MDgW56oXUFMRfSuRhPcyoWcGwSyj81hUnM",
+		//"MHr2w1nQ2aiGuh7McpAvi5TMvqmzVLJeNC",
+		//"MMRbpJdtxXeNmdwRZa4JjNgraL2XKUeg4e",
+		//"MNVJdDfesiRdPMWz1QCnyvAXTbTcfdaBun",
 
 		//"MSz3Ca3SJGDezZRXDNJG5pHGgbxQktikce", //手续费地址
 
-		//"MVGArUVejtWdzoU72krCvQVAkqnwwjDpue",
+		"MEm7YfzY6EnNSxPpm9xxTgk65X6EX9mPxL",
 	}
 
 	tm := testInitWalletManager()
@@ -158,7 +158,7 @@ func TestTransfer(t *testing.T) {
 
 	for _, to := range addrs {
 
-		rawTx, err := testCreateTransactionStep(tm, walletID, accountID, to, "0.01", "", nil)
+		rawTx, err := testCreateTransactionStep(tm, walletID, accountID, to, "0.1", "", nil)
 		if err != nil {
 			return
 		}
@@ -187,18 +187,18 @@ func TestTransfer_Token(t *testing.T) {
 	addrs := make([]string, 0)
 
 	addrs = []string{
-		"M8zhymCjZD9ZzSR9skirEhJnNDEdcJBb6c",
-		"MC3byQPhQS9dQYkY4ME5R94j5GksWvDYTR",
-		"MDgW56oXUFMRfSuRhPcyoWcGwSyj81hUnM",
-		"MHr2w1nQ2aiGuh7McpAvi5TMvqmzVLJeNC",
-		"MMRbpJdtxXeNmdwRZa4JjNgraL2XKUeg4e",
-		"MNVJdDfesiRdPMWz1QCnyvAXTbTcfdaBun",
+		//"M8zhymCjZD9ZzSR9skirEhJnNDEdcJBb6c",
+		//"MC3byQPhQS9dQYkY4ME5R94j5GksWvDYTR",
+		//"MDgW56oXUFMRfSuRhPcyoWcGwSyj81hUnM",
+		//"MHr2w1nQ2aiGuh7McpAvi5TMvqmzVLJeNC",
+		//"MMRbpJdtxXeNmdwRZa4JjNgraL2XKUeg4e",
+		//"MNVJdDfesiRdPMWz1QCnyvAXTbTcfdaBun",
 
 		//"MSz3Ca3SJGDezZRXDNJG5pHGgbxQktikce", //手续费地址
 
 		//"MWCkqfboaFwD3536QfYJnKXL5AcSpBVnMq",
 
-		//"MExjWT4Wq1M7BgE8zci2rWfWP5HLdEP8m9",
+		"MEm7YfzY6EnNSxPpm9xxTgk65X6EX9mPxL",
 	}
 
 	tm := testInitWalletManager()
